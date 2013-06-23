@@ -15,15 +15,19 @@ def discover():
 	## Application ID 20100
 	## Application Secret a1a337326a5c40e99c413e4116315733
 	offlineToken=getOfflineToken(user_id,app_id)
-	print "Token: " + offlineToken
+	print "Offline Token: " + offlineToken
 	hash = hashlib.sha256(offlineToken+app_secret).hexdigest()
-	resultSet = callEndpoint("/products/discover", offlineToken, hash)
-	return resultSet
+	productIdsStrings = callEndpoint("/products/discover", offlineToken, hash, {'maxItems':100})
+	commaSeperatedIds = productIdsStrings.strip('[').strip(']')
+	productsDetails = callEndpoint("/products/get", offlineToken, hash, {'ids':commaSeperatedIds})
+	return productsDetails
 
-def callEndpoint(endpoint, token, hash):
+def callEndpoint(endpoint, token, hash, params):
 	path = base_url + endpoint + "?"
-	req_param=urllib.urlencode([('token',str(token)),('hash',str(hash)),('maxItems',100)])
-	print path + ' - ' + req_param;
+	params['token'] = str(token)
+	params['hash'] = str(hash)
+	req_param=urllib.urlencode(params.items())
+	print "## platform-call: " + path + req_param
 	pageEndpoint=urllib.urlopen(path,req_param)
 	results=pageEndpoint.read().replace('"','')
 	return results
