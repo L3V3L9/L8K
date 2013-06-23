@@ -2,6 +2,7 @@ window.addEvent("domready", function(){
     colors = ["#730046", "#BFBB11", "#FFC200", "#E88801", "#C93C00"];
     var mywall = new Wall("wall", {
                     "draggable":true,
+                    "inertia":true,
                     "width":180,
                     "height":180,
                     "printCoordinates":true,
