@@ -1,8 +1,4 @@
 import sys, string, os
-from bottle import route, run, template
-from bottle import static_file
-from bottle import error
-
 import struct,time,hashlib,urllib
 
 user_id=1114
@@ -10,7 +6,6 @@ app_id=20100
 app_secret='a1a337326a5c40e99c413e4116315733'
 base_url='http://shcboxplatform.shopyourway.com'
 
-@route('/api/discover')
 def discover():
 	## Application ID 20100
 	## Application Secret a1a337326a5c40e99c413e4116315733
@@ -22,6 +17,16 @@ def discover():
 	productsDetails = callEndpoint("/products/get", offlineToken, hash, {'ids':commaSeperatedIds})
 	return productsDetails
 
+
+
+
+######  below you can find methods for internal usage ######
+
+
+
+#################################################################################
+# This method makes the call to the platform-api, 				  				#
+#################################################################################
 def callEndpoint(endpoint, token, hash, params):
 	path = base_url + endpoint + "?"
 	params['token'] = str(token)
@@ -61,23 +66,3 @@ def getOfflineToken(user_id,appid_prod):
 	page=urllib.urlopen(req_url,req_param)
 	token=page.read().replace('"','')
 	return token
-
-
-
-## running the server (+command lines...)
-print "#############"
-print "## in case you want to push your own host\port just use the command line - when running the server."
-print "## argv[1] = host, argv[2] = port"
-print "#############"
-
-host = '0.0.0.0'
-if len(sys.argv) > 1:
-	host = sys.argv[1]
-	print 'argument #1: ' + sys.argv[1]
-
-port = '3001'
-if len(sys.argv) > 2:
-	port = sys.argv[2]
-	print 'argument #2: ' + sys.argv[2]
-
-run(host=host, port=port)
