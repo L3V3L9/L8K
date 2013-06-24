@@ -14,7 +14,7 @@ def discover():
 	hash = hashlib.sha256(offlineToken+app_secret).hexdigest()
 	productIdsStrings = callEndpoint("/products/discover", offlineToken, hash, {'maxItems':100})
 	commaSeperatedIds = productIdsStrings.strip('[').strip(']')
-	productsDetails = callEndpoint("/products/get", offlineToken, hash, {'ids':commaSeperatedIds})
+	productsDetails = callEndpoint("/products/get", offlineToken, hash, {'ids':commaSeperatedIds, 'with':'tags'})
 	return productsDetails
 
 
