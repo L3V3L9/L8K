@@ -1,3 +1,30 @@
 *.py[cod]
 public/.gitignore
 public/*
+
+#############################################################
+#             Visual Studio Auto Generated Files
+#############################################################
+*.suo
+*.sln.cache
+*.csproj.user
+src/kinect/**/bin/
+src/kinect/**/obj/
+bin/
+obj/
+
+#############################################################
+#             ReSharper Auto Generated Files
+#############################################################
+src/kinect/_[Rr]e[Ss]harper*
+src/kinect/**/_ReSharper.*
+*.[Rr]e[Ss]harper.user
+src/kinect/Ohio.*.ReSharper
+*.DotSettings.user
+
+#############################################################
+#                  Miscellaneous
+#############################################################
+.gitignore.backup
+*.orig
+[Tt]humbs.db
