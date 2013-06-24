@@ -17,7 +17,9 @@ def error404(error):
 
 @route('/discover')
 def getdiscover():
-    data = discover()
+    l = request.query['items']
+    data = discover(l)
+    print data
     return str(data)
 
 @route('/random')
