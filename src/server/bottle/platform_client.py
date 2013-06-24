@@ -7,14 +7,20 @@ app_secret='a1a337326a5c40e99c413e4116315733'
 base_url='http://shcboxplatform.shopyourway.com'
 
 def discover(limit=100):
-	## Application ID 20100
-	## Application Secret a1a337326a5c40e99c413e4116315733
 	offline_token=get_offline_token(user_id,app_id)
 	print "Offline Token: " + offline_token
 	hash = hashlib.sha256(offline_token+app_secret).hexdigest()
 	product_ids_strings = call_endpoint("/products/discover", offline_token, hash, {'maxItems':limit})
 	comma_seperated_ids = product_ids_strings[1:-1]
 	products_details = call_endpoint("/products/get", offline_token, hash, {'ids':comma_seperated_ids, 'with':'tags'})
+	return products_details
+
+
+def get_products_by_tags(tag_ids):
+	offline_token=get_offline_token(user_id,app_id)
+	print "Offline Token: " + offline_token
+	hash = hashlib.sha256(offline_token+app_secret).hexdigest()
+	products_details = call_endpoint("/products/get-by-tags", offline_token, hash, {'tagIds':tag_ids})
 	return products_details
 
 
@@ -64,3 +70,28 @@ def get_offline_token(user_id,appid_prod):
 	page=urllib2.urlopen(req_url,req_param,timeout=2)
 	token=page.read().replace('"','')
 	return token
+
+
+
+## Scripting \ Main
+if __name__ == "__main__":
+	import sys
+	results = ""
+	print "syntax: python platfrom_client.py [method_name] [method_variable]"
+	if len(sys.argv) < 2:
+		exit(1)
+
+	if len(sys.argv) >= 2:
+		method_name = str(sys.argv[1])
+		if method_name == "discover":
+			if len(sys.argv) == 3:
+				results = discover(int(sys.argv[2]))
+			else:
+				result = discover()
+		elif method_name == "get_products_by_tags": 
+			results = get_products_by_tags("220420,414208")
+		else:
+			print "can't run method " + method_name
+			exit(1)
+
+	print results
