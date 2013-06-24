@@ -9,13 +9,15 @@ window.addEvent("domready", function(){
                     "rangex":[-300,300],
                     "rangey":[-300,300],
                     callOnUpdate: function(items){
-                        items.each(function(e, i){
-                            // If use concole log
-                            // console.log("x:" + e.x + "\t y:"+e.y);
-                            // On Update set different color background
-                            e.node.setStyle("background",colors[ Math.floor(Math.random()*colors.length) ]);
-							e.node.fade("hide").fade("in")
-                        }.bind(this));
+                        var myRequest = new Request({ url: '/random',
+                           onSuccess: function(response) {
+                              var object = JSON.decode(response);
+                              items.each(function(e, i){
+                                 e.node.setStyle("backgroundImage","url(img/img"+object[i]+".jpg)");
+                                 e.node.fade("hide").fade("in");
+                              });
+                        }}).get("items="+items.length);
+
                     }
                 });
     // Init Wall
