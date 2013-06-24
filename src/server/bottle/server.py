@@ -1,8 +1,10 @@
 import sys, string, os
 from bottle import route, run, template
 from bottle import static_file
-from bottle import error
-
+from bottle import error,request
+import pyRserve
+conn = pyRserve.connect()
+conn.eval("source('/tmp/server.r')")
 
 @route('/static/<filepath:path>')
 def server_static(filepath):
@@ -12,11 +14,16 @@ def server_static(filepath):
 def error404(error):
     return 'Nothing here, sorry'
 
+@route('/random')
+def get_rserve_random():
+    l = request.query['items']
+    lst = []
+    if int(l)>0:
+        items = str(conn.eval("item_choosing("+str(l)+")"))
+        items = items[1:-1].translate(None,'\n').strip(' ')
+        lst = [int(x) for x in items.split()]
+    return str(lst)
 
-
-
-## running the server (+command lines...)
-print "#############"
 print "## in case you want to push your own host\port just use the command line - when running the server."
 print "## argv[1] = host, argv[2] = port"
 print "#############"

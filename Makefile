@@ -9,6 +9,9 @@ public_files:
 	@cp -R src/app/thewall/* public/
 	@cp vendor/thewall/wall.js public/js/
 
+rserve:
+	@cp src/server/rserve/server.r /tmp/
+
 
 #----------------------------------------------------------
 # Paths
