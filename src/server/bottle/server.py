@@ -3,6 +3,7 @@ from bottle import route, run, template
 from bottle import static_file
 from bottle import error,request
 import pyRserve
+from platform_client import *
 conn = pyRserve.connect()
 conn.eval("source('/tmp/server.r')")
 
@@ -13,6 +14,11 @@ def server_static(filepath):
 @error(404)
 def error404(error):
     return 'Nothing here, sorry'
+
+@route('/discover')
+def getdiscover():
+    data = discover()
+    return str(data)
 
 @route('/random')
 def get_rserve_random():

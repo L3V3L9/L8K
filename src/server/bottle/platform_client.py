@@ -34,7 +34,7 @@ def callEndpoint(endpoint, token, hash, params):
 	req_param=urllib.urlencode(params.items())
 	print "## platform-call: " + path + req_param
 	pageEndpoint=urllib.urlopen(path,req_param)
-	results=pageEndpoint.read().replace('"','')
+	results=pageEndpoint.read()
 	return results
 
 
