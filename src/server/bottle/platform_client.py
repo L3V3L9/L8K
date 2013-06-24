@@ -6,18 +6,16 @@ app_id=20100
 app_secret='a1a337326a5c40e99c413e4116315733'
 base_url='http://shcboxplatform.shopyourway.com'
 
-def discover():
+def discover(limit=100):
 	## Application ID 20100
 	## Application Secret a1a337326a5c40e99c413e4116315733
-	offlineToken=getOfflineToken(user_id,app_id)
-	print "Offline Token: " + offlineToken
-	hash = hashlib.sha256(offlineToken+app_secret).hexdigest()
-	productIdsStrings = callEndpoint("/products/discover", offlineToken, hash, {'maxItems':100})
-	commaSeperatedIds = productIdsStrings.strip('[').strip(']')
-	productsDetails = callEndpoint("/products/get", offlineToken, hash, {'ids':commaSeperatedIds, 'with':'tags'})
-	return productsDetails
-
-
+	offline_token=get_offline_token(user_id,app_id)
+	print "Offline Token: " + offline_token
+	hash = hashlib.sha256(offline_token+app_secret).hexdigest()
+	product_ids_strings = call_endpoint("/products/discover", offline_token, hash, {'maxItems':limit})
+	comma_seperated_ids = product_ids_strings[1:-1]
+	products_details = call_endpoint("/products/get", offline_token, hash, {'ids':comma_seperated_ids, 'with':'tags'})
+	return products_details
 
 
 ######  below you can find methods for internal usage ######
@@ -27,7 +25,7 @@ def discover():
 #################################################################################
 # This method makes the call to the platform-api, 				  				#
 #################################################################################
-def callEndpoint(endpoint, token, hash, params):
+def call_endpoint(endpoint, token, hash, params):
 	path = base_url + endpoint + "?"
 	params['token'] = str(token)
 	params['hash'] = str(hash)
@@ -42,7 +40,7 @@ def callEndpoint(endpoint, token, hash, params):
 #################################################################################
 # This method returns the signiture needed for getting the Offline Access Token #
 #################################################################################
-def getSignature(user_id,app_id,time_stamp,app_secret):
+def get_signature(user_id,app_id,time_stamp,app_secret):
 	userid_buffer=buffer(struct.pack('@q', user_id),0)
 	appid_buffer=buffer(struct.pack('@q', app_id),0)
 	timestamp_buffer=buffer(struct.pack('@d',time_stamp),0)
@@ -55,9 +53,9 @@ def getSignature(user_id,app_id,time_stamp,app_secret):
 #################################################################################
 # This method returns the token needed for creating the hash                    #
 #################################################################################
-def getOfflineToken(user_id,appid_prod):
+def get_offline_token(user_id,appid_prod):
 	uxtime=int(time.time())
-	signature=getSignature(user_id,app_id,uxtime,app_secret)
+	signature=get_signature(user_id,app_id,uxtime,app_secret)
 	time_stamp_str=time.strftime("%Y-%m-%d %H:%M:%S",time.gmtime(uxtime)).replace(' ','T')
 	req_url=base_url+'/auth/get-token?'
 	req_param=urllib.urlencode([('userId',str(user_id)),('appId',str(appid_prod)),('timestamp',time_stamp_str),('signature',signature)])
