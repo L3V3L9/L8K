@@ -9,11 +9,14 @@ window.addEvent("domready", function(){
                     "rangex":[-300,300],
                     "rangey":[-300,300],
                     callOnUpdate: function(items){
-                        var myRequest = new Request({ url: '/random',
+
+                        var myRequest = new Request({ url: '/discover',
                            onSuccess: function(response) {
                               var object = JSON.decode(response);
                               items.each(function(e, i){
-                                 e.node.setStyle("backgroundImage","url(img/img"+object[i]+".jpg)");
+                                 e.node.setStyle("backgroundImage","url(http://images.weserv.nl/?url="+object[i].imageUrl.replace(/.*?:\/\//g, "")+"&h=180&w=180)");
+                                 //e.node.setStyle("backgroundImage","url("+object[i].imageUrl+")");
+                                 //e.node.setStyle("backgroundSize","180px 180px");
                                  e.node.fade("hide").fade("in");
                               });
                         }}).get("items="+items.length);

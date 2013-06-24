@@ -7,6 +7,8 @@ from platform_client import *
 conn = pyRserve.connect()
 conn.eval("source('/tmp/server.r')")
 
+cache = []
+
 @route('/static/<filepath:path>')
 def server_static(filepath):
     return static_file(filepath, root='public/')
