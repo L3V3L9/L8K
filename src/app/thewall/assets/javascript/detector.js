@@ -49,17 +49,21 @@ function detectProductIndices(items) {
       }
       scanline = true;
    }
-   var px,py;
+   var px,py,wx,wy;
    if (isHorizontalBar) {
       if (nmax_y > amaxy) {
          px = (nmax_x-Math.floor(((nmax_x-nmin_x)/2)));
          py = (nmax_y-1);
-         console.log('horizontal bottom:'+px+','+py);
+         wx = 0;
+         wy = -1;
+         //console.log('horizontal bottom:'+px+','+py);
       }
       if (nmax_y < aminy) {
          px = (nmax_x-Math.floor(((nmax_x-nmin_x)/2)));
          py = (nmax_y+1);
-         console.log('horizontal top:'+px+','+py);
+         wx = 0;
+         wy = 1;
+         //console.log('horizontal top:'+px+','+py);
       }
    }
 
@@ -67,17 +71,21 @@ function detectProductIndices(items) {
       if (nmax_x > amaxx) {
          py = (nmax_y-Math.floor(((nmax_y-nmin_y)/2)));
          px = (nmax_x-1);
-         console.log('vertical right:'+px+','+py);
+         wx = -1;
+         wy = 0;
+         //console.log('vertical right:'+px+','+py);
       }
       if (nmax_x < aminx) {
          py = (nmax_y-Math.floor(((nmax_y-nmin_y)/2)));
          px = (nmax_x+1);
-         console.log('vertical left:'+px+','+py);
+         wx = 1;
+         wy = 0;
+         //console.log('vertical left:'+px+','+py);
       }
    }
    amaxx = nmax_x;amaxy=nmax_y;aminx = nmin_x; aminy = nmin_y;
    if (px===undefined || py===undefined) {
       console.log('nmin_x='+nmin_x+',nmin_y='+nmin_y+',nmax_x='+nmax_x+',nmax_y='+nmax_y);
    }
-   return [px,py];
+   return [px,py,wx,wy];
 }

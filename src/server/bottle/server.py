@@ -4,7 +4,7 @@ from bottle import route, run, template
 from bottle import static_file
 from bottle import error,request
 import pyRserve
-
+import operator
 from platform_client import *
 from rec_system import *
 
@@ -35,8 +35,13 @@ def getdiscover():
     products = post_body['products']
     data = []
     if len(products):
-        print add_product_tagging_weight(products[0]['id'],5,products[0]['tags'])
-        data = get_products_by_tags(str(products[0]['tags']))
+        tags =  add_product_tagging_weight(products[0]['id'],5,products[0]['tags'])
+        sorted_list_of_tags = sorted(tags.iteritems(), key=operator.itemgetter(1))
+        print sorted_list_of_tags[-3:]
+        topmost_tags = []
+        for t in sorted_list_of_tags[-3:]:
+            topmost_tags.append(t[0])
+        data = get_products_by_tags(products[0]['tags'][0:3]+topmost_tags)
     return str(data)
 
 @route('/random')
