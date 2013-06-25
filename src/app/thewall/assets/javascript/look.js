@@ -1,3 +1,17 @@
+$(function() {    
+    $('#wall').mousedown(function(e){
+        var wall = $(this);
+        wall.removeClass('not-clicked');
+        wall.addClass('clicked');
+        e.preventDefault();
+    })
+    .mouseup(function(){
+        var wall = $(this);
+        wall.removeClass('clicked');                
+        wall.addClass('not-clicked');
+    });
+});
+
 db = {
 
 };

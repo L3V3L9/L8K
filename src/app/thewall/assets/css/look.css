@@ -11,6 +11,15 @@
 #wall{
     z-index:1;
 }
+
+    #wall.not-clicked {
+        cursor: url('../images/open-hand.png'), default;
+    }
+
+    #wall.clicked {
+        cursor: url('../images/closed-hand.png'), default;
+    }
+
     /* Tile Wall create */
     #wall .tile{
         color:#FFFFFF;
