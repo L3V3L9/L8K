@@ -4,7 +4,10 @@ from bottle import route, run, template
 from bottle import static_file
 from bottle import error,request
 import pyRserve
+
 from platform_client import *
+from rec_system import *
+
 conn = pyRserve.connect()
 conn.eval("source('/tmp/server.r')")
 
@@ -23,6 +26,17 @@ def getdiscover():
     post_body = json.load(request.body)
     l = post_body['items']
     data = discover(l)
+    return str(data)
+
+@route('/find',method='POST')
+def getdiscover():
+    post_body = json.load(request.body)
+    l = post_body['items']
+    products = post_body['products']
+    data = []
+    if len(products):
+        print add_product_tagging_weight(products[0]['id'],5,products[0]['tags'])
+        data = get_products_by_tags(str(products[0]['tags']))
     return str(data)
 
 @route('/random')

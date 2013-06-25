@@ -1,6 +1,7 @@
 db = {
 
 };
+init = false;
 window.addEvent("domready", function(){
     colors = ["#730046", "#BFBB11", "#FFC200", "#E88801", "#C93C00"];
     var mywall = new Wall("wall", {
@@ -29,9 +30,12 @@ window.addEvent("domready", function(){
              products : prods,
              items : items.length
           };
+          var endpoint = '/discover';
+          if (init) endpoint = '/find';
           var myRequest = new Request({ 
-             url: '/discover',
+             url: endpoint,
              onSuccess: function(response) {
+                init = true;
                 var object = JSON.decode(response);
                 items.each(function(e, i){
                    if (object[i]===undefined) return; 
@@ -42,7 +46,7 @@ window.addEvent("domready", function(){
                    };
                    e.node.setStyle("backgroundImage",
                                    "url(http://images.weserv.nl/?url="+
-                                   object[i].imageUrl.replace(/.*?:\/\//g, "")+"&h=180&w=180)");
+                                   encodeURIComponent(object[i].imageUrl.replace(/.*?:\/\//g, ""))+"&h=180&w=180)");
                    //e.node.setStyle("backgroundImage","url("+object[i].imageUrl+")");
                    //e.node.setStyle("backgroundSize","180px 180px");
                    e.node.fade("hide").fade("in");
