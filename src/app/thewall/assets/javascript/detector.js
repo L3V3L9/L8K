@@ -1,3 +1,4 @@
+amaxx = 0 ;amaxy=0;aminx = 0; aminy = 0;
 function detectProductIndices(items) {
    var nmax_y = _.max(items,function(i) {
       return i.x;
@@ -75,5 +76,8 @@ function detectProductIndices(items) {
       }
    }
    amaxx = nmax_x;amaxy=nmax_y;aminx = nmin_x; aminy = nmin_y;
+   if (px===undefined || py===undefined) {
+      console.log('nmin_x='+nmin_x+',nmin_y='+nmin_y+',nmax_x='+nmax_x+',nmax_y='+nmax_y);
+   }
    return [px,py];
 }

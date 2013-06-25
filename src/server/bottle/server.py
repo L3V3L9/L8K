@@ -31,7 +31,9 @@ def get_rserve_random():
     if int(l)>0:
         items = str(conn.eval("item_choosing("+str(l)+")"))
         items = items[1:-1].translate(None,'\n').strip(' ')
-        lst = [int(x) for x in items.split()]
+        templst = [int(x) for x in items.split()]
+        for j in templst:
+            lst.append({'id':j,'tags':[1,2,3,4,5,6,7,8,9,10]})
     return str(lst)
 
 print "## in case you want to push your own host\port just use the command line - when running the server."
