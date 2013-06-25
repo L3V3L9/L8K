@@ -3,13 +3,13 @@ import json
 from bottle import route, run, template
 from bottle import static_file
 from bottle import error,request
-import pyRserve
+#import pyRserve
 import operator
 from platform_client import *
 from rec_system import *
 
-conn = pyRserve.connect()
-conn.eval("source('/tmp/server.r')")
+#conn = pyRserve.connect()
+#conn.eval("source('/tmp/server.r')")
 
 cache = []
 
@@ -70,4 +70,4 @@ if len(sys.argv) > 2:
 	port = sys.argv[2]
 	print 'argument #2: ' + sys.argv[2]
 
-run(host=host, port=port)
+run(host='192.168.100.205', port=port)
