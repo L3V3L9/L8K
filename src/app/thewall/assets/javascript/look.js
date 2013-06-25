@@ -1,3 +1,6 @@
+db = {
+
+};
 window.addEvent("domready", function(){
     colors = ["#730046", "#BFBB11", "#FFC200", "#E88801", "#C93C00"];
     var mywall = new Wall("wall", {
@@ -12,13 +15,20 @@ window.addEvent("domready", function(){
           if (items.length===0) return;
           var productIndex = detectProductIndices(items);
           if (productIndex[0]===undefined || productIndex[1]===undefined) return;
+          var iid = mywall.getIdFromCoordinates(productIndex[1],productIndex[0]);
+          //console.log($$("#"+iid));
+          if (db[iid]) {
+             console.log(db[iid].pid); 
+             console.log(db[iid].tags); 
+          }
           var myRequest = new Request({ 
              url: '/discover',
              onSuccess: function(response) {
                 var object = JSON.decode(response);
                 items.each(function(e, i){
                    if (object[i]===undefined) return; 
-                   e.product = {
+                   var iid = mywall.getIdFromCoordinates(e.x,e.y);
+                   db[iid] =  {
                       pid : object[i].id,
                       tags : object[i].tags
                    };
