@@ -6,9 +6,8 @@
         xmlns:my="clr-namespace:Microsoft.Samples.Kinect.WpfViewers;assembly=Microsoft.Samples.Kinect.WpfViewers">
     <StackPanel>
         <my:KinectSensorChooser Name="kinectSensorChooser" Width="300" />
-        <Image Width="320" Height="240" Name="video"/>
+        <Image Width="320" Height="240" Name="Video"/>
         <CheckBox Name="LeftHand">Left-handed</CheckBox>
-        <TextBlock Name="Status" FontSize="36" />
-        <TextBlock Name="Fingers" FontSize="20"/>
+        <TextBlock Name="Status" FontSize="36" />        
     </StackPanel>
 </Window>

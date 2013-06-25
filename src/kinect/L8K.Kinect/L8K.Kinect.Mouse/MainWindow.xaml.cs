@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Globalization;
-using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
-using CCT.NUI.HandTracking;
-using CCT.NUI.KinectSDK;
 using Coding4Fun.Kinect.Wpf;
 using Microsoft.Kinect;
 
@@ -19,11 +15,7 @@ namespace L8K.Kinect.Mouse
 		private const float SkeletonMaxX = 0.60f;
 		private const float SkeletonMaxY = 0.40f;
 
-		public bool HandIsOpened { get; set; }
-		public bool Drag { get; set; }
-
-		private readonly NotifyIcon _notifyIcon = new NotifyIcon();
-		private HandDataSource _handDataSource;
+		private readonly NotifyIcon _notifyIcon = new NotifyIcon();		
 
 		public MainWindow()
 		{
@@ -37,24 +29,10 @@ namespace L8K.Kinect.Mouse
 				Focus();
 			};
 		}
-
-
-
+		
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			kinectSensorChooser.KinectSensorChanged += kinectSensorChooser_KinectSensorChanged;
-		}
-
-		public void HandDataSource_NewDataAvailable(HandCollection data)
-		{
-			if (!data.HandsDetected)
-			{
-				Fingers.Text = "No fingers";
-				return;
-			}
-
-			var hand = data.Hands.First();
-			Fingers.Text = hand.FingerCount.ToString(CultureInfo.InvariantCulture);
 		}
 
 		private static void StopKinect(KinectSensor sensor)
@@ -65,7 +43,7 @@ namespace L8K.Kinect.Mouse
 			sensor.AudioSource.Stop();
 		}
 
-		void kinectSensorChooser_KinectSensorChanged(object sender, DependencyPropertyChangedEventArgs e)
+		private void kinectSensorChooser_KinectSensorChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
 			var old = (KinectSensor)e.OldValue;
 
@@ -88,7 +66,7 @@ namespace L8K.Kinect.Mouse
 			sensor.SkeletonStream.Enable(parameters);
 			sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
 			sensor.DepthStream.Enable(DepthImageFormat.Resolution320x240Fps30);
-
+			
 			sensor.AllFramesReady += new EventHandler<AllFramesReadyEventArgs>(sensor_AllFramesReady);
 			try
 			{
@@ -202,7 +180,7 @@ namespace L8K.Kinect.Mouse
 					return;
 				}
 
-				video.Source = depthFrame.ToBitmapSource();
+				Video.Source = depthFrame.ToBitmapSource();
 			}
 		}
 	}
