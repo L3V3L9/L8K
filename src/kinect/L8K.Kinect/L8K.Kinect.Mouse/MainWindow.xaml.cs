@@ -1,187 +1,229 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
 using System.Windows;
-using System.Windows.Forms;
-using Coding4Fun.Kinect.Wpf;
+using L8K.Kinect.Mouse.Extensions;
 using Microsoft.Kinect;
+using Microsoft.Kinect.Toolkit.Interaction;
 
 namespace L8K.Kinect.Mouse
 {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
 	public partial class MainWindow
 	{
-		private const float ClickThreshold = 0.33f;
 		private const float SkeletonMaxX = 0.60f;
 		private const float SkeletonMaxY = 0.40f;
 
-		private readonly NotifyIcon _notifyIcon = new NotifyIcon();		
+		private KinectSensor _sensor;  //The Kinect Sensor the application will use
+		private InteractionStream _interactionStream;
+
+		private Skeleton[] _skeletons; //the skeletons 
+		private UserInfo[] _userInfos; //the information about the interactive users
 
 		public MainWindow()
 		{
 			InitializeComponent();
-			
-			_notifyIcon.Visible = true;
-			_notifyIcon.DoubleClick += delegate
+			Loaded += OnLoaded;
+		}
+
+		private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+		{
+			if (DesignerProperties.GetIsInDesignMode(this))
+				return;
+
+			// this is just a test, so it only works with one Kinect, and quits if that is not available.
+			_sensor = KinectSensor.KinectSensors.FirstOrDefault();
+			if (_sensor == null)
 			{
-				Show();
-				WindowState = WindowState.Normal;
-				Focus();
-			};
-		}
-		
-		private void Window_Loaded(object sender, RoutedEventArgs e)
-		{
-			kinectSensorChooser.KinectSensorChanged += kinectSensorChooser_KinectSensorChanged;
-		}
+				MessageBox.Show("No Kinect Sensor detected!");
+				Close();
+				return;
+			}
 
-		private static void StopKinect(KinectSensor sensor)
-		{
-			if (sensor == null || !sensor.IsRunning) return;
-			
-			sensor.Stop();
-			sensor.AudioSource.Stop();
-		}
+			_skeletons = new Skeleton[_sensor.SkeletonStream.FrameSkeletonArrayLength];
+			_userInfos = new UserInfo[InteractionFrame.UserInfoArrayLength];
 
-		private void kinectSensorChooser_KinectSensorChanged(object sender, DependencyPropertyChangedEventArgs e)
-		{
-			var old = (KinectSensor)e.OldValue;
+			_sensor.DepthStream.Range = DepthRange.Near;
+			_sensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
 
-			StopKinect(old);
-
-			var sensor = (KinectSensor)e.NewValue;
-
-			if (sensor == null)
-				return;			
-
+			_sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Default;
+			_sensor.SkeletonStream.EnableTrackingInNearRange = true;
 			var parameters = new TransformSmoothParameters
-				{
-					Smoothing = 0.7f,
-					Correction = 0.3f,
-					Prediction = 0.4f,
-					JitterRadius = 1.0f,
-					MaxDeviationRadius = 0.5f
-				};
+			{
+				Smoothing = 0.7f,
+				Correction = 0.3f,
+				Prediction = 0.4f,
+				JitterRadius = 1.0f,
+				MaxDeviationRadius = 0.5f
+			};
+			_sensor.SkeletonStream.Enable(parameters);
 
-			sensor.SkeletonStream.Enable(parameters);
-			sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
-			sensor.DepthStream.Enable(DepthImageFormat.Resolution320x240Fps30);
-			
-			sensor.AllFramesReady += new EventHandler<AllFramesReadyEventArgs>(sensor_AllFramesReady);
+			_interactionStream = new InteractionStream(_sensor, new MouseInteractionClient());
+			_interactionStream.InteractionFrameReady += InteractionStreamOnInteractionFrameReady;
+
+			_sensor.DepthFrameReady += SensorOnDepthFrameReady;
+			_sensor.SkeletonFrameReady += SensorOnSkeletonFrameReady;
+
+			_sensor.Start();
+		}
+
+
+
+		private void SensorOnSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs skeletonFrameReadyEventArgs)
+		{
+			using (SkeletonFrame skeletonFrame = skeletonFrameReadyEventArgs.OpenSkeletonFrame())
+			{
+				if (skeletonFrame == null)
+					return;
+
+				skeletonFrame.CopySkeletonDataTo(_skeletons);
+				ProcessSkeletonInteraction(skeletonFrame);
+			}
+
+			MoveMouse(_skeletons);
+		}
+
+		private void MoveMouse(IEnumerable<Skeleton> skeletons)
+		{
+			foreach (var sd in skeletons.Where(sd => sd.TrackingState == SkeletonTrackingState.Tracked).Where(sd => sd.Joints[JointType.HandLeft].TrackingState == JointTrackingState.Tracked && sd.Joints[JointType.HandRight].TrackingState == JointTrackingState.Tracked))
+			{
+				var jointRight = sd.Joints[JointType.HandRight];
+
+				var scaledRight = jointRight.ScaleTo((int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight, SkeletonMaxX, SkeletonMaxY);				
+
+				var cursorX = (int)scaledRight.Position.X;
+				var cursorY = (int)scaledRight.Position.Y;
+
+
+				var leftClick = false;
+				InteractionHandEventType eventType;
+				if (_lastRightHandEvents.TryGetValue(sd.TrackingId, out eventType))
+				{
+					leftClick = eventType == InteractionHandEventType.Grip;
+					ClickStatus.Text = eventType.ToString();
+				}
+				else
+				{
+					ClickStatus.Text = "No event type for skeleton #" + sd.TrackingId;
+				}
+
+				Status.Text = cursorX + ", " + cursorY + ", " + leftClick;
+				NativeMethods.SendMouseInput(cursorX, cursorY, (int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight, leftClick);
+			}
+		}
+
+		private void ProcessSkeletonInteraction(SkeletonFrame skeletonFrame)
+		{
 			try
 			{
-				sensor.Start();
+				var accelerometerReading = _sensor.AccelerometerGetCurrentReading();
+				_interactionStream.ProcessSkeleton(_skeletons, accelerometerReading, skeletonFrame.Timestamp);
 			}
-			catch (System.IO.IOException)
-			{				
-				kinectSensorChooser.AppConflictOccurred();
-			}
-		}
-
-		void sensor_AllFramesReady(object sender, AllFramesReadyEventArgs e)
-		{
-			Sensor_DepthFrameReady(e);
-			Sensor_SkeletonFrameReady(e);
-		}
-
-
-		private void Window_Closed(object sender, EventArgs e)
-		{			
-			_notifyIcon.Visible = false;
-
-			if (kinectSensorChooser.Kinect != null)
+			catch (InvalidOperationException)
 			{
-				kinectSensorChooser.Kinect.Stop();
-			}
-
-		}
-
-		private void Window_StateChanged(object sender, EventArgs e)
-		{
-			if (WindowState == WindowState.Minimized)
-			{
-				Hide();
+				// SkeletonFrame functions may throw when the sensor gets
+				// into a bad state.  Ignore the frame in that case.
 			}
 		}
 
-		private void Sensor_SkeletonFrameReady(AllFramesReadyEventArgs e)
+		private void SensorOnDepthFrameReady(object sender, DepthImageFrameReadyEventArgs depthImageFrameReadyEventArgs)
 		{
-			using (var skeletonFrameData = e.OpenSkeletonFrame())
-			{
-				if (skeletonFrameData == null)
-					return;
-
-				var allSkeletons = new Skeleton[skeletonFrameData.SkeletonArrayLength];
-
-				skeletonFrameData.CopySkeletonDataTo(allSkeletons);
-
-				foreach (Skeleton sd in allSkeletons)
-				{
-					// the first found/tracked skeleton moves the mouse cursor
-					if (sd.TrackingState == SkeletonTrackingState.Tracked)
-					{
-						// make sure both hands are tracked
-						if (sd.Joints[JointType.HandLeft].TrackingState == JointTrackingState.Tracked &&
-							sd.Joints[JointType.HandRight].TrackingState == JointTrackingState.Tracked)
-						{
-
-							int cursorX, cursorY;
-
-							// get the left and right hand Joints
-							var jointRight = sd.Joints[JointType.HandRight];
-							var jointLeft = sd.Joints[JointType.HandLeft];
-
-							// scale those Joints to the primary screen width and height
-							var scaledRight = jointRight.ScaleTo((int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight, SkeletonMaxX, SkeletonMaxY);
-							var scaledLeft = jointLeft.ScaleTo((int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight, SkeletonMaxX, SkeletonMaxY);
-
-							// figure out the cursor position based on left/right handedness
-							if (LeftHand.IsChecked.GetValueOrDefault())
-							{
-								cursorX = (int)scaledLeft.Position.X;
-								cursorY = (int)scaledLeft.Position.Y;
-							}
-							else
-							{
-								cursorX = (int)scaledRight.Position.X;
-								cursorY = (int)scaledRight.Position.Y;
-							}
-
-							bool leftClick;
-
-							// figure out whether the mouse button is down based on where the opposite hand is
-							if ((LeftHand.IsChecked.GetValueOrDefault() && jointRight.Position.Y > ClickThreshold) ||
-									(!LeftHand.IsChecked.GetValueOrDefault() && jointLeft.Position.Y > ClickThreshold))
-								leftClick = true;
-							else
-								leftClick = false;
-
-							Status.Text = cursorX + ", " + cursorY + ", " + leftClick;
-							NativeMethods.SendMouseInput(cursorX, cursorY, (int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight, leftClick);
-
-							return;
-						}
-					}
-				}
-			}
-
-
-		}
-
-		private void Sensor_DepthFrameReady(AllFramesReadyEventArgs e)
-		{
-			// if the window is displayed, show the depth buffer image
-			if (WindowState != WindowState.Normal) return;
-
-			using (var depthFrame = e.OpenDepthImageFrame())
+			using (var depthFrame = depthImageFrameReadyEventArgs.OpenDepthImageFrame())
 			{
 				if (depthFrame == null)
-				{
 					return;
+
+				ShowVideo(depthFrame);
+
+				ProcessSkeletonInteraction(depthFrame);
+			}
+		}
+
+		private void ProcessSkeletonInteraction(DepthImageFrame depthFrame)
+		{
+			try
+			{
+				_interactionStream.ProcessDepth(depthFrame.GetRawPixelData(), depthFrame.Timestamp);
+			}
+			catch (InvalidOperationException)
+			{
+				// DepthFrame functions may throw when the sensor gets
+				// into a bad state.  Ignore the frame in that case.
+			}
+		}
+
+		private void ShowVideo(DepthImageFrame depthFrame)
+		{
+			Video.Source = depthFrame.ToBitmapSource();
+		}
+
+		private readonly Dictionary<int, InteractionHandEventType> _lastLeftHandEvents = new Dictionary<int, InteractionHandEventType>();
+		private readonly Dictionary<int, InteractionHandEventType> _lastRightHandEvents = new Dictionary<int, InteractionHandEventType>();
+
+		private void InteractionStreamOnInteractionFrameReady(object sender, InteractionFrameReadyEventArgs args)
+		{
+			using (var iaf = args.OpenInteractionFrame()) //dispose as soon as possible
+			{
+				if (iaf == null)
+					return;
+
+				iaf.CopyInteractionDataTo(_userInfos);
+			}
+
+			var dump = new StringBuilder();
+
+			var hasUser = false;
+			foreach (var userInfo in _userInfos)
+			{
+				var userId = userInfo.SkeletonTrackingId;
+				if (userId == 0)
+					continue;
+
+				hasUser = true;
+				dump.AppendLine("User ID = " + userId);
+				dump.AppendLine("  Hands: ");
+				var hands = userInfo.HandPointers;
+				if (hands.Count == 0)
+					dump.AppendLine("    No hands");
+				else
+				{
+					foreach (var hand in hands)
+					{
+						var lastHandEvents = hand.HandType == InteractionHandType.Left
+												 ? _lastLeftHandEvents
+												 : _lastRightHandEvents;
+
+						if (hand.HandEventType != InteractionHandEventType.None)
+							lastHandEvents[userId] = hand.HandEventType;
+
+						var lastHandEvent = lastHandEvents.ContainsKey(userId)
+												? lastHandEvents[userId]
+												: InteractionHandEventType.None;
+
+						dump.AppendLine();
+						dump.AppendLine("    HandType: " + hand.HandType);
+						dump.AppendLine("    HandEventType: " + hand.HandEventType);
+						dump.AppendLine("    LastHandEventType: " + lastHandEvent);
+						dump.AppendLine("    IsActive: " + hand.IsActive);
+						dump.AppendLine("    IsPrimaryForUser: " + hand.IsPrimaryForUser);
+						dump.AppendLine("    IsInteractive: " + hand.IsInteractive);
+						dump.AppendLine("    PressExtent: " + hand.PressExtent.ToString("N3"));
+						dump.AppendLine("    IsPressed: " + hand.IsPressed);
+						dump.AppendLine("    IsTracked: " + hand.IsTracked);
+						dump.AppendLine("    X: " + hand.X.ToString("N3"));
+						dump.AppendLine("    Y: " + hand.Y.ToString("N3"));
+						dump.AppendLine("    RawX: " + hand.RawX.ToString("N3"));
+						dump.AppendLine("    RawY: " + hand.RawY.ToString("N3"));
+						dump.AppendLine("    RawZ: " + hand.RawZ.ToString("N3"));
+					}
 				}
 
-				Video.Source = depthFrame.ToBitmapSource();
+				tb.Text = dump.ToString();
 			}
+
+			if (!hasUser)
+				tb.Text = "No user detected.";
 		}
 	}
 }

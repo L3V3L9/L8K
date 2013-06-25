@@ -1,13 +1,15 @@
 ﻿<Window x:Class="L8K.Kinect.Mouse.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Kinect Cursor Control" Height="550" Width="640" Loaded="Window_Loaded" Closed="Window_Closed" 
-        WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged" ResizeMode="CanMinimize" 
-        xmlns:my="clr-namespace:Microsoft.Samples.Kinect.WpfViewers;assembly=Microsoft.Samples.Kinect.WpfViewers">
-    <StackPanel>
-        <my:KinectSensorChooser Name="kinectSensorChooser" Width="300" />
-        <Image Width="320" Height="240" Name="Video"/>
-        <CheckBox Name="LeftHand">Left-handed</CheckBox>
-        <TextBlock Name="Status" FontSize="36" />        
+        Title="L∞K - Kinect mouse control" Height="550" Width="640" 
+        WindowStartupLocation="CenterScreen">
+    <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Vertical">
+            <Image Width="320" Height="240" Name="Video" VerticalAlignment="Top"/>
+            <TextBlock Name="Status" FontSize="20" />
+            <TextBlock Name="ClickStatus" FontSize="20" />
+        </StackPanel>
+        
+       <TextBlock Name="tb" FontFamily="Lucida Console" Text="Initializing..."/>
     </StackPanel>
 </Window>

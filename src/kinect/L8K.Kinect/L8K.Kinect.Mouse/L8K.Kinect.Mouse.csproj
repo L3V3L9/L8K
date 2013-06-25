@@ -37,10 +37,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Coding4Fun.Kinect.Wpf, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Kinect\Coding4Fun.Kinect.Wpf.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Kinect, Version=1.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Kinect\Microsoft.Kinect.dll</HintPath>
@@ -48,8 +44,8 @@
     <Reference Include="Microsoft.Kinect.Toolkit">
       <HintPath>..\..\lib\Kinect\Microsoft.Kinect.Toolkit.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Samples.Kinect.WpfViewers">
-      <HintPath>..\..\lib\Kinect\Microsoft.Samples.Kinect.WpfViewers.dll</HintPath>
+    <Reference Include="Microsoft.Kinect.Toolkit.Interaction">
+      <HintPath>..\..\lib\Kinect\Microsoft.Kinect.Toolkit.Interaction.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Windows.Forms" />
@@ -75,12 +71,17 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Extensions\BitmapSourceExtensions.cs" />
+    <Compile Include="Extensions\ImageFrameCommonExtensions.cs" />
+    <Compile Include="Extensions\ImageFrameExtensions.cs" />
+    <Compile Include="Extensions\SkeletalCommonExtensions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MouseInteractionClient.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
