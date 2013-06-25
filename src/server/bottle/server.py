@@ -1,4 +1,5 @@
 import sys, string, os
+import json
 from bottle import route, run, template
 from bottle import static_file
 from bottle import error,request
@@ -17,9 +18,10 @@ def server_static(filepath):
 def error404(error):
     return 'Nothing here, sorry'
 
-@route('/discover')
+@route('/discover',method='POST')
 def getdiscover():
-    l = request.query['items']
+    post_body = json.load(request.body)
+    l = post_body['items']
     data = discover(l)
     return str(data)
 

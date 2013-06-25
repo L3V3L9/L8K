@@ -37,7 +37,7 @@ def call_endpoint(endpoint, token, hash, params):
 	params['hash'] = str(hash)
 	req_param=urllib.urlencode(params.items())
 	print "## platform-call: " + path + req_param
-	pageEndpoint=urllib2.urlopen(path,req_param,timeout=2)
+	pageEndpoint=urllib2.urlopen(path,req_param,timeout=5)
 	results=pageEndpoint.read()
 	return results
 
@@ -67,7 +67,7 @@ def get_offline_token(user_id,appid_prod):
 	req_param=urllib.urlencode([('userId',str(user_id)),('appId',str(appid_prod)),('timestamp',time_stamp_str),('signature',signature)])
 	print "url:" + req_url
 	print "params:" + req_param
-	page=urllib2.urlopen(req_url,req_param,timeout=2)
+	page=urllib2.urlopen(req_url,req_param,timeout=5)
 	token=page.read().replace('"','')
 	return token
 

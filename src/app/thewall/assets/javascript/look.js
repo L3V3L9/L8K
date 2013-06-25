@@ -17,10 +17,18 @@ window.addEvent("domready", function(){
           if (productIndex[0]===undefined || productIndex[1]===undefined) return;
           var iid = mywall.getIdFromCoordinates(productIndex[1],productIndex[0]);
           //console.log($$("#"+iid));
+          prods = [];
           if (db[iid]) {
              console.log(db[iid].pid); 
              console.log(db[iid].tags); 
+             prods = [
+                { id:db[iid].pid,tags:db[iid].tags }
+             ];
           }
+          request = {
+             products : prods,
+             items : items.length
+          };
           var myRequest = new Request({ 
              url: '/discover',
              onSuccess: function(response) {
@@ -40,7 +48,8 @@ window.addEvent("domready", function(){
                    e.node.fade("hide").fade("in");
                 });
              }
-          }).get("items="+items.length);
+          ///}).get("items="+items.length);
+          }).post(JSON.stringify(request));
        }
     });
     // Init Wall
