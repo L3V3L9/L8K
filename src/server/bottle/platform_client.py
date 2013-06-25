@@ -20,9 +20,15 @@ def get_products_by_tags(tag_ids):
 	offline_token=get_offline_token(user_id,app_id)
 	print "Offline Token: " + offline_token
 	hash = hashlib.sha256(offline_token+app_secret).hexdigest()
-	products_details = call_endpoint("/products/get-by-tags", offline_token, hash, {'tagIds':tag_ids})
+	new_tag_ids = remove_black_listed_tags(tag_ids)
+	comma_seperated_tag_ids = str(new_tag_ids)[1:-1]
+	products_details = call_endpoint("/products/get-by-tags", offline_token, hash, {'tagIds':comma_seperated_tag_ids, 'with':'tags'})
 	return products_details
 
+def remove_black_listed_tags(tag_ids):
+	tags_to_exclude = [414208,479499,479516,5601110,3923331,4125531,5066939,1776576,1962220,5969363,5031419,4785512,1098204,1098227,1112005,1173137,1245774,1324787,1324813,1611877,760011,760034,760038,760024,760057,760012,760013,760059,760063,760021,760067,760054,760001,760074,760027,760007,760053,760055,760010,760051,760006,760071,760018,760015,760069,760019,760023,760066,760008,760016,760040,760005,760050,760056,760070,760052,760047,760002,760041,760035,760022,760028,760033,760060,760075,760044,760046,760032,760065,760061,760003,760064,760025,760072,760058,760062,760037,760030,760045,760029,760020,760026,760073,760043,760031,760009,760068,760036,760049,760039,760017,760048,760004,760042,224510,221554,479499]
+	new_tags_list = [x for x in tag_ids if x not in tags_to_exclude]
+	return new_tags_list
 
 ######  below you can find methods for internal usage ######
 
@@ -76,6 +82,11 @@ def get_offline_token(user_id,appid_prod):
 ## Scripting \ Main
 if __name__ == "__main__":
 	import sys
+	
+	print remove_black_listed_tags([414208, 414209])
+	print get_products_by_tags([414208, 414209])
+	exit(0)
+
 	results = ""
 	print "syntax: python platfrom_client.py [method_name] [method_variable]"
 	if len(sys.argv) < 2:
