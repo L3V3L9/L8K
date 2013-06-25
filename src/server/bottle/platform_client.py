@@ -82,27 +82,8 @@ def get_offline_token(user_id,appid_prod):
 ## Scripting \ Main
 if __name__ == "__main__":
 	import sys
-	
+	print discover()
 	print remove_black_listed_tags([414208, 414209])
 	print get_products_by_tags([414208, 414209])
 	exit(0)
 
-	results = ""
-	print "syntax: python platfrom_client.py [method_name] [method_variable]"
-	if len(sys.argv) < 2:
-		exit(1)
-
-	if len(sys.argv) >= 2:
-		method_name = str(sys.argv[1])
-		if method_name == "discover":
-			if len(sys.argv) == 3:
-				results = discover(int(sys.argv[2]))
-			else:
-				result = discover()
-		elif method_name == "get_products_by_tags": 
-			results = get_products_by_tags("220420,414208")
-		else:
-			print "can't run method " + method_name
-			exit(1)
-
-	print results
