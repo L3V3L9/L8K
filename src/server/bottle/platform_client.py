@@ -8,6 +8,17 @@ base_url='http://shcboxplatform.shopyourway.com'
 debug_mode=False
 
 
+#class Memoize:
+#	def __init__(self, func):
+#		self.f = func
+#		self.memo = {}
+#	def __call__(self, *args):
+#		str_args = str(args)
+#		if not str_args in self.memo:
+#			self.memo[str_args] = self.f(*args)
+#		return self.memo[str_args]
+
+
 def predefined_items(num):
 	predefined_ids=[222022648,254720849,238970266,275362706]  #girls dresses => 1077004
 	predefined_ids=predefined_ids+[165347484,199683497,202781100,258132401] #Junior Dresses => 1077042
@@ -117,6 +128,6 @@ if __name__ == "__main__":
 	print predefined_items(1)
 	#print discover()
 	#print remove_black_listed_tags([414208, 414209])
-	#print get_products_by_tags([414208, 414209])
+	print get_products_by_tags([414208, 414209])
 	exit(0)
 
