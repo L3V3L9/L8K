@@ -40,7 +40,7 @@ def cacheandserve(topmost_tags,l):
     tdelta = n - last_time
     last_time = n
     #print "DELTA IS " +  str(tdelta.total_seconds()) + " AND L is " + str(l)
-    if tdelta.total_seconds()<2 and len(cache)>=l:
+    if tdelta.total_seconds()<1 and len(cache)>=l:
         #print "GET FROM CACHE"
         #serve from cache
         res = cache[:l]
