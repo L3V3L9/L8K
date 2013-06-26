@@ -26,7 +26,7 @@ def error404(error):
 def getdiscover():
     post_body = json.load(request.body)
     l = post_body['items']
-    data = discover(l)
+    data = predefined_items(l)
     return str(data)
 
 def cacheandserve(topmost_tags,l):
