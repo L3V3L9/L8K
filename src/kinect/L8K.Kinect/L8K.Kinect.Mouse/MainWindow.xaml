@@ -8,8 +8,11 @@
             <Image Width="320" Height="240" Name="Video" VerticalAlignment="Top"/>
             <TextBlock Name="Status" FontSize="20" />
             <TextBlock Name="ClickStatus" FontSize="20" />
+            <TextBlock Name="RightClickStatus" FontSize="20" />
         </StackPanel>
         
        <TextBlock Name="tb" FontFamily="Lucida Console" Text="Initializing..."/>
     </StackPanel>
 </Window>
+
+    

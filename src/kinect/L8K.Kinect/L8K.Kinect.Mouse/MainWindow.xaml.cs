@@ -97,10 +97,11 @@ namespace L8K.Kinect.Mouse
 
 
 				var leftClick = false;
+				var rightClick = false;
 				InteractionHandEventType eventType;
 				if (_lastRightHandEvents.TryGetValue(sd.TrackingId, out eventType))
 				{
-					leftClick = eventType == InteractionHandEventType.Grip;
+					leftClick = eventType == InteractionHandEventType.Grip;					
 					ClickStatus.Text = eventType.ToString();
 				}
 				else
@@ -108,8 +109,13 @@ namespace L8K.Kinect.Mouse
 					ClickStatus.Text = "No event type for skeleton #" + sd.TrackingId;
 				}
 
+				if (_lastRightHandPress.TryGetValue(sd.TrackingId, out rightClick))
+					RightClickStatus.Text = rightClick.ToString();
+				else
+					RightClickStatus.Text = "No right click";
+
 				Status.Text = cursorX + ", " + cursorY + ", " + leftClick;
-				NativeMethods.SendMouseInput(cursorX, cursorY, (int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight, leftClick);
+				NativeMethods.SendMouseInput(cursorX, cursorY, (int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight, leftClick, rightClick);
 			}
 		}
 
@@ -160,6 +166,7 @@ namespace L8K.Kinect.Mouse
 
 		private readonly Dictionary<int, InteractionHandEventType> _lastLeftHandEvents = new Dictionary<int, InteractionHandEventType>();
 		private readonly Dictionary<int, InteractionHandEventType> _lastRightHandEvents = new Dictionary<int, InteractionHandEventType>();
+		private readonly Dictionary<int, bool> _lastRightHandPress = new Dictionary<int, bool>();
 
 		private void InteractionStreamOnInteractionFrameReady(object sender, InteractionFrameReadyEventArgs args)
 		{
@@ -190,6 +197,9 @@ namespace L8K.Kinect.Mouse
 				{
 					foreach (var hand in hands)
 					{
+						if (hand.HandType == InteractionHandType.Right)
+							_lastRightHandPress[userId] = hand.IsPressed;							
+
 						var lastHandEvents = hand.HandType == InteractionHandType.Left
 												 ? _lastLeftHandEvents
 												 : _lastRightHandEvents;
@@ -197,6 +207,7 @@ namespace L8K.Kinect.Mouse
 						if (hand.HandEventType != InteractionHandEventType.None)
 							lastHandEvents[userId] = hand.HandEventType;
 
+						
 						var lastHandEvent = lastHandEvents.ContainsKey(userId)
 												? lastHandEvents[userId]
 												: InteractionHandEventType.None;
