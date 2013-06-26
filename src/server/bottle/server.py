@@ -7,12 +7,13 @@ from bottle import error,request
 import operator
 from platform_client import *
 from rec_system import *
+from datetime import datetime
 
 #conn = pyRserve.connect()
 #conn.eval("source('/tmp/server.r')")
 
 cache = []
-
+last_time = datetime.now()
 @route('/static/<filepath:path>')
 def server_static(filepath):
     return static_file(filepath, root='public/')
@@ -28,6 +29,27 @@ def getdiscover():
     data = discover(l)
     return str(data)
 
+def cacheandserve(topmost_tags,l):
+    global cache
+    n = datetime.now()
+    tdelta = n - last_time
+    last_time = n
+    #print "DELTA IS " +  str(tdelta.total_seconds()) + " AND L is " + str(l)
+    if tdelta.total_seconds()<2 and len(cache)>=l:
+        #print "GET FROM CACHE"
+        #serve from cache
+        res = cache[:l]
+        cache = cache[l:]
+        return json.dumps(cache[:l])
+    else:
+        data = get_products_by_tags(topmost_tags)
+        if (data):
+            cache = json.loads(data)
+            #print "CACHE SIZE IS  " + str(len(cache))
+        else:
+            data = "[]"
+        return data
+        
 @route('/find',method='POST')
 def getdiscover():
     print "---"
@@ -44,11 +66,11 @@ def getdiscover():
         print "#### algo: output #### =>" + str(topmost_tags_tuple)
         for t in topmost_tags_tuple:
             topmost_tags.append(t[0])
-        
         next_tags = topmost_tags
         print "#### fetch tags (next-call) #### =>" + str(next_tags)
-        data = get_products_by_tags(next_tags)
+        data = cacheandserve(next_tags,l)
     return str(data)
+
 
 @route('/random')
 def get_rserve_random():
