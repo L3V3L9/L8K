@@ -19,11 +19,11 @@ def predefined_items(num):
 	predefined_ids=predefined_ids+[59616645,149798451,140996712,140990168,231831141,140738654,148012978] #Ty Penington + patio
 	predefined_ids=predefined_ids+[65363912,109415633,144989276,65363908,159490575,22211085,336474,37287519,86820281] # New Born => 1460472
 	predefined_ids=predefined_ids+[153316557,170568681,179358871,132559923,140132836,147324242,162752159,204552481] #Black and Yellow => 1143338
-	predegined_ids=predefined_ids+[58469718,25787,249902976,192557909,277764161,255401760,277764133,277764131,192557960,277764159,277205734] # Cylcing => 899627
-	#predegined_ids=predefined_ids+[] #womens-shoes/6875469
-	predegined_ids=predefined_ids+[186795917,223437721,220189935,91541880,124263162,195925688] #girls-shoes/6876025/
-	predegined_ids=predefined_ids+[294250,294352,294355,182343068,129676028,269354] #mens-work-shoes-boots/6875471/
-	predegined_ids=predefined_ids+[161969674,186546079,304257,186546211,281805] #womens-dress-shoes/7856424/
+	predefined_ids=predefined_ids+[58469718,25787,249902976,192557909,277764161,255401760,277764133,277764131,192557960,277764159,277205734] # Cylcing => 899627
+	#predefined_ids=predefined_ids+[] #womens-shoes/6875469
+	predefined_ids=predefined_ids+[186795917,223437721,220189935,91541880,124263162,195925688] #girls-shoes/6876025/
+	predefined_ids=predefined_ids+[294250,294352,294355,182343068,129676028,269354] #mens-work-shoes-boots/6875471/
+	predefined_ids=predefined_ids+[161969674,186546079,304257,186546211,281805] #womens-dress-shoes/7856424/
 	comma_seperated_ids = str(predefined_ids)
 	comma_seperated_ids = comma_seperated_ids[1:-1]
 	offline_token=get_offline_token(user_id,app_id)
