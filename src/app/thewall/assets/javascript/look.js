@@ -39,10 +39,12 @@ window.addEvent("domready", function(){
              var safety = 0;
              //console.log(db);
              iid = mywall.getIdFromCoordinates(cx,cy);
+             var incx = productIndex[3],
+                 incy = productIndex[2];
              while (db[iid]===undefined && safety < 5) {
                 //console.log(iid);
-                cx = cx + productIndex[3];
-                cy = cy + productIndex[2];
+                cx = cx + incx;
+                cy = cy + incy;
                 iid = mywall.getIdFromCoordinates(cx,cy);
                 //console.log('cx='+cy+',cy='+cx);
                 safety = safety + 1;
@@ -50,12 +52,24 @@ window.addEvent("domready", function(){
              //console.log($$("#"+iid));
 
              if (db[iid]) {
+                // get 2 more products
+                var iid1,iid2;
+                if (incx === 0) {
+                   iid1 = mywall.getIdFromCoordinates(cx-1,cy);
+                   iid2 = mywall.getIdFromCoordinates(cx+1,cy);
+                }
+                if (incy === 0) {
+                   iid1 = mywall.getIdFromCoordinates(cx,cy-1);
+                   iid2 = mywall.getIdFromCoordinates(cx,cy+1);
+                }
                 console.log('cx='+cy+',cy='+cx);
                 console.log(db[iid].pid); 
                 console.log(db[iid].tags); 
                 prods = [
                    { id:db[iid].pid,tags:db[iid].tags }
                 ];
+                if (db[iid1]) prods.push({ id:db[iid1].pid,tags:db[iid1].tags });
+                if (db[iid2]) prods.push({ id:db[iid2].pid,tags:db[iid2].tags });
              }
 
           }
@@ -65,10 +79,25 @@ window.addEvent("domready", function(){
           };
           var endpoint = '/discover';
           if (init) endpoint = '/find';
+          else {
+             var imax_x = _.max(items,function(i) {
+                return i.x;
+             }).x;
+             var imax_y = _.max(items,function(i) {
+                return i.y;
+             }).y;
+             var imin_x = _.min(items,function(i) {
+                return i.x;
+             }).x;
+             var imin_y = _.min(items,function(i) {
+                return i.y;
+             }).y;
+                 
+          }
+
           var myRequest = new Request({ 
              url: endpoint,
              onSuccess: function(response) {
-                init = true;
                 var object = JSON.decode(response);
                 items.each(function(e, i){
                    if (object[i]===undefined) return; 
@@ -77,15 +106,21 @@ window.addEvent("domready", function(){
                       pid : object[i].id,
                       tags : object[i].tags
                    };
-                   e.node.setStyle("backgroundImage",
-                                   "url(http://images.weserv.nl/?url="+
-                                   encodeURIComponent(object[i].imageUrl.replace(/.*?:\/\//g, ""))+"&h=180&w=180)");
-                   //e.node.setStyle("backgroundImage","url("+object[i].imageUrl+")");
-                   //e.node.setStyle("backgroundSize","180px 180px");
+                   if (init === false &&
+                       e.x !== imin_x && e.x !== imax_x && e.y!==imax_y && e.y!==imin_y) {
+                      console.log("setting to logo");
+                      e.node.setStyle("backgroundImage", "url(assets/images/look.png)");
+                   }
+                   else {
+                      e.node.setStyle("backgroundImage",
+                                      "url(http://images.weserv.nl/?url="+
+                                      encodeURIComponent(object[i].imageUrl.replace(/.*?:\/\//g, ""))+"&h=180&w=180)");
+
+                   }
                    e.node.fade("hide").fade("in");
                 });
+                init = true;
              }
-          ///}).get("items="+items.length);
           }).post(JSON.stringify(request));
        }
     });

@@ -61,6 +61,8 @@ def getdiscover():
     if len(products):
         print "#### fetching pid #### =>" + str(products[0]['id'])
         topmost_tags_tuple = add_product_tagging_weight(products[0]['id'],5,products[0]['tags'])
+        for pindex in range(len(products)-1):
+            topmost_tags_tuple = add_product_tagging_weight(products[pindex+1]['id'],1,products[pindex+1]['tags'])
         topmost_tags = []
         print "#### algo: input #### =>" + str(products[0]['id']) + " and tags: " + str(products[0]['tags'])
         print "#### algo: output #### =>" + str(topmost_tags_tuple)
