@@ -11,13 +11,13 @@ $(function() {
         wall.addClass('not-clicked');
     });
 
-    $('.tile').bind("contextmenu",function() {
+    $('.tile').on("contextmenu",function() {      
       var tile = $(this);
       var pid = tile.data('pid');
+      if (Platform != undefined && pid != undefined)
+        Platform.Product.OpenQuickView(pid);
 
-      Platform.Product.OpenQuickView(pid);
-
-      return true;
+      return false;
     });
 });
 
