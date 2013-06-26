@@ -10,6 +10,15 @@ $(function() {
         wall.removeClass('clicked');                
         wall.addClass('not-clicked');
     });
+
+    $('.tile').bind("contextmenu",function() {
+      var tile = $(this);
+      var pid = tile.data('pid');
+
+      Platform.Product.OpenQuickView(pid);
+
+      return true;
+    });
 });
 
 db = {
