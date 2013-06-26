@@ -44,6 +44,7 @@ window.addEvent("domready", function(){
              //console.log($$("#"+iid));
 
              if (db[iid]) {
+                console.log('cx='+cy+',cy='+cx);
                 console.log(db[iid].pid); 
                 console.log(db[iid].tags); 
                 prods = [
