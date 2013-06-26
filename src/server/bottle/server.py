@@ -20,10 +20,9 @@ def landing():
     redirect("/static/index.html")
     #return static_file('index.html', root='public/')
 
-@route('/landing/<filepath:path>')
-def landing(filepath):
-    return static_file(filepath, root='public/')
-
+@route('/post-login')
+def post_login():
+    return "our post install page..."
 
 @route('/static/<filepath:path>')
 def server_static(filepath):

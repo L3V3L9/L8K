@@ -2,10 +2,18 @@ import sys, string, os
 import struct,time,hashlib,urllib2,urllib
 
 user_id=1114
-app_id=20100
-app_secret='a1a337326a5c40e99c413e4116315733'
-base_url='http://shcboxplatform.shopyourway.com'
 debug_mode=False
+
+#SHCBOX
+#app_id=20100
+#app_secret='a1a337326a5c40e99c413e4116315733'
+#base_url='http://shcboxplatform.shopyourway.com'
+
+#PROD
+app_id=4800
+app_secret='2af19f3f0b99476d8bbae02365319a2e'
+base_url='http://platform.shopyourway.com'
+
 
 
 #class Memoize:
