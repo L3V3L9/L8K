@@ -2,7 +2,7 @@ import sys, string, os
 import json
 from bottle import route, run, template
 from bottle import static_file
-from bottle import error,request
+from bottle import error,request,redirect
 #import pyRserve
 import operator
 from platform_client import *
@@ -14,8 +14,20 @@ from datetime import datetime
 
 cache = []
 last_time = datetime.now()
+
+@route('/landing')
+def landing():
+    redirect("/static/index.html")
+    #return static_file('index.html', root='public/')
+
+@route('/landing/<filepath:path>')
+def landing(filepath):
+    return static_file(filepath, root='public/')
+
+
 @route('/static/<filepath:path>')
 def server_static(filepath):
+    print filepath
     return static_file(filepath, root='public/')
 
 @error(404)
