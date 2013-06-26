@@ -14,6 +14,8 @@ class Step(object):
 		self.direction_weight = direction_weight
 		self.ptags = ptags
 
+def reset_tag_storage():
+	tags_storage = defaultdict(lambda: 0)
 
 def add_product_tagging_weight_obj(step):
 	return add_product_tagging_weight(step.pid, step.direction_weight, step.ptags)

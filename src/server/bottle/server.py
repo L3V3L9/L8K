@@ -22,6 +22,11 @@ def server_static(filepath):
 def error404(error):
     return 'Nothing here, sorry'
 
+@route('/reset')
+def reset():
+    reset_tag_storage()
+    return("success")
+
 @route('/discover',method='POST')
 def getdiscover():
     post_body = json.load(request.body)
