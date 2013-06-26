@@ -1,5 +1,5 @@
 $(function() {    
-    $(document).bind('contextmenu', function() { return false; });
+    window.oncontextmenu = function() { return false; };
 
     $('#wall').mousedown(function(e){
         switch (event.which) {
