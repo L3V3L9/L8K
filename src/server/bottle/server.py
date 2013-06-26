@@ -70,4 +70,4 @@ if len(sys.argv) > 2:
 	port = sys.argv[2]
 	print 'argument #2: ' + sys.argv[2]
 
-run(host='192.168.100.205', port=port)
+run(host=host, port=port)
