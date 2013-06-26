@@ -24,6 +24,7 @@ $(function() {
 db = {
 
 };
+originals = [];
 init = false;
 prods = [];
 window.addEvent("domready", function(){
@@ -31,7 +32,7 @@ window.addEvent("domready", function(){
     var myRequest = new Request({ 
        url: "/reset",
        onSuccess: function(response) {
-          alert('go');
+          console.log('server reset');
        }
     }).get();
 
@@ -69,6 +70,7 @@ window.addEvent("domready", function(){
              //console.log($$("#"+iid));
 
              if (db[iid]) {
+                db[iid].node.fade("hide").fade("in");
                 // get 2 more products
                 var iid1,iid2;
                 if (incx === 0) {
@@ -96,20 +98,19 @@ window.addEvent("domready", function(){
           };
           var endpoint = '/discover';
           if (init) endpoint = '/find';
-          else {
-             var imax_x = _.max(items,function(i) {
-                return i.x;
-             }).x;
-             var imax_y = _.max(items,function(i) {
-                return i.y;
-             }).y;
-             var imin_x = _.min(items,function(i) {
-                return i.x;
-             }).x;
-             var imin_y = _.min(items,function(i) {
-                return i.y;
-             }).y;
-          }
+
+          var imax_x = _.max(items,function(i) {
+             return i.x;
+          }).x;
+          var imax_y = _.max(items,function(i) {
+             return i.y;
+          }).y;
+          var imin_x = _.min(items,function(i) {
+             return i.x;
+          }).x;
+          var imin_y = _.min(items,function(i) {
+             return i.y;
+          }).y;
 
           var myRequest = new Request({ 
              url: endpoint,
@@ -117,21 +118,33 @@ window.addEvent("domready", function(){
                 var object = JSON.decode(response);
                 items.each(function(e, i){
                    if (object[i]===undefined) return; 
+                   var object_to_place = object[i];
+                   if (init) {
+                      var rand1= originals[Math.floor(Math.random() * originals.length)];
+                      if ((e.x=== imin_x && e.y === imin_y) || (e.x===imax_x && e.y === imax_y)) {
+                          object_to_place = originals[Math.floor(Math.random() * originals.length)];
+                      }
+                   }
+
                    var iid = mywall.getIdFromCoordinates(e.x,e.y);
                    db[iid] =  {
-                      pid : object[i].id,
-                      tags : object[i].tags
+                      pid : object_to_place.id,
+                      tags : object_to_place.tags,
+                      node : e.node
                    };
+                   if (init === false) {
+                      originals.push(object_to_place);
+                   }
                    if (init === false &&
                        e.x !== imin_x && e.x !== imax_x && e.y!==imax_y && e.y!==imin_y) {
                       console.log("setting to logo");
                       e.node.setStyle("backgroundImage", "url(assets/images/look.png)");
                    }
                    else {
-                      $(e.node).attr('data-pid',object[i].id);
+                      $(e.node).attr('data-pid',object_to_place.id);
                       e.node.setStyle("backgroundImage",
                                       "url(http://images.weserv.nl/?url="+
-                                      encodeURIComponent(object[i].imageUrl.replace(/.*?:\/\//g, ""))+"&h=180&w=180)");
+                                      encodeURIComponent(object_to_place.imageUrl.replace(/.*?:\/\//g, ""))+"&h=180&w=180)");
 
                    }
                    e.node.fade("hide").fade("in");

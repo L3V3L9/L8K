@@ -77,9 +77,12 @@ def getdiscover():
     data = []
     if len(products):
         print "#### fetching pid #### =>" + str(products[0]['id'])
-        topmost_tags_tuple = add_product_tagging_weight(products[0]['id'],5,products[0]['tags'])
-        for pindex in range(len(products)-1):
-            topmost_tags_tuple = add_product_tagging_weight(products[pindex+1]['id'],1,products[pindex+1]['tags'])
+
+        topmost_tags_tuple = add_product_tagging_weight(products[0]['id'],20,products[0]['tags'])
+        weights = [20,10,5]
+        #for pindex in range(len(products)-1):
+        #    topmost_tags_tuple = add_product_tagging_weight(products[pindex+1]['id'],weights[pindex],products[pindex+1]['tags'])
+
         topmost_tags = []
         print "#### algo: input #### =>" + str(products[0]['id']) + " and tags: " + str(products[0]['tags'])
         print "#### algo: output #### =>" + str(topmost_tags_tuple)
@@ -87,7 +90,10 @@ def getdiscover():
             topmost_tags.append(t[0])
         next_tags = topmost_tags
         print "#### fetch tags (next-call) #### =>" + str(next_tags)
-        #next_tags = remove_black_listed_tags(products[0]['tags'])
+
+        ### -- if you want to activate the algorithm, comment the next line!!!
+        next_tags = remove_black_listed_tags(products[0]['tags'])
+
         data = cacheandserve(next_tags,l)
     return str(data)
 
