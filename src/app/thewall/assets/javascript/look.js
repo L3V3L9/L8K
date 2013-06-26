@@ -24,7 +24,7 @@ window.addEvent("domready", function(){
        "inertia":true,
        "width":180,
        "height":180,
-       "printCoordinates":true,
+  //     "printCoordinates":true,
        "rangex":[-300,300],
        "rangey":[-300,300],
        callOnUpdate: function(items){
