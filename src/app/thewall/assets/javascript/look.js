@@ -1,23 +1,30 @@
 $(function() {    
     $('#wall').mousedown(function(e){
-        var wall = $(this);
-        wall.removeClass('not-clicked');
-        wall.addClass('clicked');
+        switch (event.which) {
+          case 1:
+            var wall = $(this);
+            wall.removeClass('not-clicked');
+            wall.addClass('clicked');
+            break;
+
+          case 3:
+            var elem = document.elementFromPoint(event.clientX, event.clientY);
+            var tile = $(elem);
+            if (!tile.hasClass('tile'))
+              break;
+            var pid = tile.data('pid');
+            if (("Platform" in window) && (pid != undefined))
+              Platform.Product.OpenQuickView(pid);
+
+            break;
+        }
+        
         e.preventDefault();
     })
     .mouseup(function(){
         var wall = $(this);
         wall.removeClass('clicked');                
         wall.addClass('not-clicked');
-    });
-
-    $('.tile').on("contextmenu",function() {      
-      var tile = $(this);
-      var pid = tile.data('pid');
-      if (Platform != undefined && pid != undefined)
-        Platform.Product.OpenQuickView(pid);
-
-      return false;
     });
 });
 
