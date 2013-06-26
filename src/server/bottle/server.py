@@ -30,7 +30,7 @@ def getdiscover():
     return str(data)
 
 def cacheandserve(topmost_tags,l):
-    global cache
+    global cache,last_time
     n = datetime.now()
     tdelta = n - last_time
     last_time = n
