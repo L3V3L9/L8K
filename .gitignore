@@ -28,3 +28,4 @@ src/kinect/Ohio.*.ReSharper
 .gitignore.backup
 *.orig
 [Tt]humbs.db
+debug.txt

@@ -1,5 +1,6 @@
 import sys, string, os, struct, time
 from collections import defaultdict
+import operator
 
 ## 
 # list<pid, weight, tag[]>
@@ -17,17 +18,23 @@ class Step(object):
 def add_product_tagging_weight_obj(step):
 	return add_product_tagging_weight(step.pid, step.direction_weight, step.ptags)
 
+def select_topmost():
+	sorted_list_of_tags = sorted(tags_storage.iteritems(), key=operator.itemgetter(1))
+	ret_value = sorted_list_of_tags[-6:]
+	return ret_value
+
 def add_product_tagging_weight(pid, direction_weight, ptags):
 	## fetch tags that relatedd to those pid
 	run_decay_on_storage()
 	for tag_id in ptags:
 		tags_storage[tag_id] += direction_weight
-	return tags_storage
+	top_most = select_topmost()
+	return top_most
 
 def run_decay_on_storage():
 	for tag_id in tags_storage:
 		value = tags_storage[tag_id]
-		tags_storage[tag_id] = value + (value * time_decay)
+		tags_storage[tag_id] = value * time_decay
 
 # Recommendation System
 if __name__ == "__main__":

@@ -30,18 +30,24 @@ def getdiscover():
 
 @route('/find',method='POST')
 def getdiscover():
+    print "---"
+    print "#### next session ####"
     post_body = json.load(request.body)
     l = post_body['items']
     products = post_body['products']
     data = []
     if len(products):
-        tags =  add_product_tagging_weight(products[0]['id'],5,products[0]['tags'])
-        sorted_list_of_tags = sorted(tags.iteritems(), key=operator.itemgetter(1))
-        print sorted_list_of_tags[-3:]
+        print "#### fetching pid #### =>" + str(products[0]['id'])
+        topmost_tags_tuple = add_product_tagging_weight(products[0]['id'],5,products[0]['tags'])
         topmost_tags = []
-        for t in sorted_list_of_tags[-3:]:
+        print "#### algo: input #### =>" + str(products[0]['id']) + " and tags: " + str(products[0]['tags'])
+        print "#### algo: output #### =>" + str(topmost_tags_tuple)
+        for t in topmost_tags_tuple:
             topmost_tags.append(t[0])
-        data = get_products_by_tags(products[0]['tags'][0:3]+topmost_tags)
+        
+        next_tags = topmost_tags
+        print "#### fetch tags (next-call) #### =>" + str(next_tags)
+        data = get_products_by_tags(next_tags)
     return str(data)
 
 @route('/random')

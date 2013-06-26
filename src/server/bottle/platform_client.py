@@ -5,10 +5,12 @@ user_id=1114
 app_id=20100
 app_secret='a1a337326a5c40e99c413e4116315733'
 base_url='http://shcboxplatform.shopyourway.com'
+debug_mode=False
+
 
 def discover(limit=100):
 	offline_token=get_offline_token(user_id,app_id)
-	print "Offline Token: " + offline_token
+	debug_it("Offline Token: " + offline_token)
 	hash = hashlib.sha256(offline_token+app_secret).hexdigest()
 	product_ids_strings = call_endpoint("/products/discover", offline_token, hash, {'maxItems':limit})
 	comma_seperated_ids = product_ids_strings[1:-1]
@@ -18,7 +20,7 @@ def discover(limit=100):
 
 def get_products_by_tags(tag_ids):
 	offline_token=get_offline_token(user_id,app_id)
-	print "Offline Token: " + offline_token
+	debug_it("Offline Token: " + offline_token)
 	hash = hashlib.sha256(offline_token+app_secret).hexdigest()
 	new_tag_ids = remove_black_listed_tags(tag_ids)
 	comma_seperated_tag_ids = str(new_tag_ids)[1:-1]
@@ -42,7 +44,7 @@ def call_endpoint(endpoint, token, hash, params):
 	params['token'] = str(token)
 	params['hash'] = str(hash)
 	req_param=urllib.urlencode(params.items())
-	print "## platform-call: " + path + req_param
+	debug_it("## platform-call: " + path + req_param)
 	pageEndpoint=urllib2.urlopen(path,req_param,timeout=5)
 	results=pageEndpoint.read()
 	return results
@@ -71,17 +73,22 @@ def get_offline_token(user_id,appid_prod):
 	time_stamp_str=time.strftime("%Y-%m-%d %H:%M:%S",time.gmtime(uxtime)).replace(' ','T')
 	req_url=base_url+'/auth/get-token?'
 	req_param=urllib.urlencode([('userId',str(user_id)),('appId',str(appid_prod)),('timestamp',time_stamp_str),('signature',signature)])
-	print "url:" + req_url
-	print "params:" + req_param
+	debug_it("url:" + req_url)
+	debug_it("params:" + req_param)
 	page=urllib2.urlopen(req_url,req_param,timeout=5)
 	token=page.read().replace('"','')
 	return token
+
+def debug_it(text):
+	if debug_mode==True: 
+		print text
 
 
 
 ## Scripting \ Main
 if __name__ == "__main__":
 	import sys
+	debug_mode=True
 	print discover()
 	print remove_black_listed_tags([414208, 414209])
 	print get_products_by_tags([414208, 414209])
