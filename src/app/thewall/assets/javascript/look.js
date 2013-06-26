@@ -18,6 +18,14 @@ db = {
 init = false;
 prods = [];
 window.addEvent("domready", function(){
+
+    var myRequest = new Request({ 
+       url: "/reset",
+       onSuccess: function(response) {
+          alert('go');
+       }
+    }).get();
+
     colors = ["#730046", "#BFBB11", "#FFC200", "#E88801", "#C93C00"];
     var mywall = new Wall("wall", {
        "draggable":true,
@@ -92,7 +100,6 @@ window.addEvent("domready", function(){
              var imin_y = _.min(items,function(i) {
                 return i.y;
              }).y;
-                 
           }
 
           var myRequest = new Request({ 
@@ -112,6 +119,7 @@ window.addEvent("domready", function(){
                       e.node.setStyle("backgroundImage", "url(assets/images/look.png)");
                    }
                    else {
+                      $(e.node).attr('data-pid',object[i].id);
                       e.node.setStyle("backgroundImage",
                                       "url(http://images.weserv.nl/?url="+
                                       encodeURIComponent(object[i].imageUrl.replace(/.*?:\/\//g, ""))+"&h=180&w=180)");
