@@ -56,14 +56,14 @@ function detectProductIndices(items) {
          py = (nmax_y-1);
          wx = 0;
          wy = -1;
-         //console.log('horizontal bottom:'+px+','+py);
+         console.log('horizontal bottom:'+px+','+py);
       }
       if (nmax_y < aminy) {
          px = (nmax_x-Math.floor(((nmax_x-nmin_x)/2)));
-         py = (nmax_y+1);
+         py = (nmax_y);
          wx = 0;
          wy = 1;
-         //console.log('horizontal top:'+px+','+py);
+         console.log('horizontal top:'+px+','+py);
       }
    }
 
@@ -73,14 +73,14 @@ function detectProductIndices(items) {
          px = (nmax_x-1);
          wx = -1;
          wy = 0;
-         //console.log('vertical right:'+px+','+py);
+         console.log('vertical right:'+px+','+py);
       }
       if (nmax_x < aminx) {
          py = (nmax_y-Math.floor(((nmax_y-nmin_y)/2)));
          px = (nmax_x+1);
          wx = 1;
          wy = 0;
-         //console.log('vertical left:'+px+','+py);
+         console.log('vertical left:'+px+','+py);
       }
    }
    amaxx = nmax_x;amaxy=nmax_y;aminx = nmin_x; aminy = nmin_y;

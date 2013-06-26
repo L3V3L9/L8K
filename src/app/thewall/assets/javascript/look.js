@@ -28,17 +28,23 @@ window.addEvent("domready", function(){
        "rangex":[-300,300],
        "rangey":[-300,300],
        callOnUpdate: function(items){
-          if (items.length===0) return;
-          var productIndex = detectProductIndices(items);
-          if (productIndex[0]===undefined || productIndex[1]===undefined) return;
           var iid = -999;
-          var cx = productIndex[1],cy=productIndex[0];
+          var productIndex,cx,cy;
+          if (items.length===0) return;
           if (init) {
+             productIndex = detectProductIndices(items);
+             if (productIndex[0]===undefined || productIndex[1]===undefined) return;
+             cx = productIndex[1],cy=productIndex[0];
+             //console.log('ocx='+cy+',ocy='+cx);
              var safety = 0;
+             //console.log(db);
+             iid = mywall.getIdFromCoordinates(cx,cy);
              while (db[iid]===undefined && safety < 5) {
-                iid = mywall.getIdFromCoordinates(productIndex[1],productIndex[0]);
+                //console.log(iid);
                 cx = cx + productIndex[3];
                 cy = cy + productIndex[2];
+                iid = mywall.getIdFromCoordinates(cx,cy);
+                //console.log('cx='+cy+',cy='+cx);
                 safety = safety + 1;
              }
              //console.log($$("#"+iid));
