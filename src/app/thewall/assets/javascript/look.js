@@ -5,6 +5,7 @@ $(function() {
             var wall = $(this);
             wall.removeClass('not-clicked');
             wall.addClass('clicked');
+            e.preventDefault();
             break;
 
           case 3:
@@ -16,10 +17,8 @@ $(function() {
             if (("Platform" in window) && (pid != undefined))
               Platform.Product.OpenQuickView(pid);
 
-            break;
+            return false;
         }
-        
-        e.preventDefault();
     })
     .mouseup(function(){
         var wall = $(this);
