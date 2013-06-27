@@ -97,7 +97,7 @@ namespace L8K.Kinect.Mouse
 
 
 				var leftClick = false;
-				var rightClick = false;
+				var middleClick = false;
 				InteractionHandEventType eventType;
 				if (_lastRightHandEvents.TryGetValue(sd.TrackingId, out eventType))
 				{
@@ -109,13 +109,13 @@ namespace L8K.Kinect.Mouse
 					ClickStatus.Text = "No event type for skeleton #" + sd.TrackingId;
 				}
 
-				if (_lastRightHandPress.TryGetValue(sd.TrackingId, out rightClick))
-					RightClickStatus.Text = rightClick.ToString();
+				if (_lastRightHandPress.TryGetValue(sd.TrackingId, out middleClick))
+					MiddleClickStatus.Text = middleClick.ToString();
 				else
-					RightClickStatus.Text = "No right click";
+					MiddleClickStatus.Text = "No middle click";
 
 				Status.Text = cursorX + ", " + cursorY + ", " + leftClick;
-				NativeMethods.SendMouseInput(cursorX, cursorY, (int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight, leftClick, rightClick);
+				NativeMethods.SendMouseInput(cursorX, cursorY, (int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight, leftClick, middleClick);
 			}
 		}
 

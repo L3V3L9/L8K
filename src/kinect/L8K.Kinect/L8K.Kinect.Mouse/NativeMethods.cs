@@ -29,15 +29,17 @@ namespace L8K.Kinect.Mouse
 		public const int MouseEventLeftUp = 0x04;
 		public const int MouseEventRightDown = 0x08;
 		public const int MouseEventRightUp = 0x10;
+		public const int MouseEventMiddleDown = 0x0020;
+		public const int MouseEventMiddleUp = 0x0040;
 		public const int MouseEventAbsolute = 0x8000;
 
 		private static bool _lastLeftDown;
-		private static bool _lastRightDown;
+		private static bool _lastMiddleDown;
 
 		[DllImport("user32.dll", SetLastError = true)]
 		private static extern uint SendInput(uint numInputs, Input[] inputs, int size);
 
-		public static void SendMouseInput(int positionX, int positionY, int maxX, int maxY, bool leftDown, bool rightDown)
+		public static void SendMouseInput(int positionX, int positionY, int maxX, int maxY, bool leftDown, bool middleDown)
 		{
 			if (positionX > int.MaxValue)
 				throw new ArgumentOutOfRangeException("positionX");
@@ -53,34 +55,34 @@ namespace L8K.Kinect.Mouse
 					MouseInput = { X = (positionX * 65535) / maxX, Y = (positionY * 65535) / maxY, Flags = MouseEventAbsolute | MouseEventMove }
 				};
 
-			uint rightClick = 0;
+			uint middleClick = 0;
 
 			// determine if we need to send a mouse down or mouse up event
-			if (!_lastRightDown && rightDown)
+			if (!_lastMiddleDown && middleDown)
 			{
-				rightClick = MouseEventRightDown;
+				middleClick = MouseEventMiddleDown;
 			}
-			else if (_lastRightDown && !rightDown)
+			else if (_lastMiddleDown && !middleDown)
 			{
-				rightClick = MouseEventRightUp;
+				middleClick = MouseEventMiddleUp;
 			}
 
 			// determine if we need to send a mouse down or mouse up event
 			if (!_lastLeftDown && leftDown)
 			{
-				i[1] = new Input { Type = InputMouse, MouseInput = { Flags = MouseEventLeftDown | rightClick } };
+				i[1] = new Input { Type = InputMouse, MouseInput = { Flags = MouseEventLeftDown | middleClick } };
 			}
 			else if (_lastLeftDown && !leftDown)
 			{
-				i[1] = new Input { Type = InputMouse, MouseInput = { Flags = MouseEventLeftUp | rightClick } };
+				i[1] = new Input { Type = InputMouse, MouseInput = { Flags = MouseEventLeftUp | middleClick } };
 			}
-			else if (rightClick > 0)
+			else if (middleClick > 0)
 			{
-				i[1] = new Input { Type = InputMouse, MouseInput = { Flags = MouseEventLeftUp | rightClick } };
+				i[1] = new Input { Type = InputMouse, MouseInput = { Flags = MouseEventLeftUp | middleClick } };
 			}
 
 			_lastLeftDown = leftDown;
-			_lastRightDown = rightDown;
+			_lastMiddleDown = middleDown;
 
 			// send it off
 			uint result = SendInput(2, i, Marshal.SizeOf(i[0]));
