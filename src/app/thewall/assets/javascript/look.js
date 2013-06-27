@@ -14,7 +14,7 @@ $(function() {
             if (!tile.hasClass('tile'))
               break;
             var pid = tile.data('pid');
-            if (("Platform" in window) && (pid != undefined))
+            if (("Platform" in window) && (pid !== undefined))
               Platform.Product.OpenQuickView(pid);
 
             break;
@@ -36,6 +36,7 @@ originals = [];
 init = false;
 prods = [];
 last_dir = -1;
+last_ev_time =  Date.now();
 dirs = {
    '0-1' : 1,
    '01' : 2,
@@ -159,7 +160,8 @@ window.addEvent("domready", function(){
                       originals.push(object_to_place);
                    }
                    if (init === false &&
-                       e.x !== imin_x && e.x !== imax_x && e.y!==imax_y && e.y!==imin_y) {
+                       e.x !== imin_x && e.x !== imax_x && e.y!==imax_y && e.y!==imin_y &&
+                       e.x !== imin_x+1 && e.x !== imax_x-1 && e.y!==imax_y-1 && e.y!==imin_y) {
                       console.log("setting to logo");
                       e.node.setStyle("backgroundImage", "url(assets/images/look.png)");
                    }
