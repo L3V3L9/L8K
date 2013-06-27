@@ -24,6 +24,10 @@ def landing():
 def post_login():
     return "our post install page..."
 
+@route('/privacy-policy')
+def privacy_policy():
+    return "privacy policy"
+
 @route('/static/<filepath:path>')
 def server_static(filepath):
     print filepath

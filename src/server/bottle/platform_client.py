@@ -15,7 +15,6 @@ app_secret='2af19f3f0b99476d8bbae02365319a2e'
 base_url='http://platform.shopyourway.com'
 
 
-
 #class Memoize:
 #	def __init__(self, func):
 #		self.f = func
@@ -48,7 +47,7 @@ def predefined_items(num):
 	offline_token=get_offline_token(user_id,app_id)
 	debug_it("Offline Token: " + offline_token)
 	hash = hashlib.sha256(offline_token+app_secret).hexdigest()
-	products_details = call_endpoint("/products/get", offline_token, hash, {'ids':comma_seperated_ids, 'with':'tags'})
+	products_details = call_endpoint("/products/get", offline_token, hash, {'ids':comma_seperated_ids, 'with':'tags', 'fields':'id,imageUrl,tags'})
 	return products_details
 
 
@@ -58,7 +57,7 @@ def discover(limit=100):
 	hash = hashlib.sha256(offline_token+app_secret).hexdigest()
 	product_ids_strings = call_endpoint("/products/discover", offline_token, hash, {'maxItems':limit})
 	comma_seperated_ids = product_ids_strings[1:-1]
-	products_details = call_endpoint("/products/get", offline_token, hash, {'ids':comma_seperated_ids, 'with':'tags'})
+	products_details = call_endpoint("/products/get", offline_token, hash, {'ids':comma_seperated_ids, 'with':'tags', 'fields':'id,imageUrl,tags'})
 	return products_details
 
 
@@ -68,18 +67,19 @@ def get_products_by_tags(tag_ids):
 	hash = hashlib.sha256(offline_token+app_secret).hexdigest()
 	new_tag_ids = remove_black_listed_tags(tag_ids)
 	comma_seperated_tag_ids = str(new_tag_ids)[1:-1]
-	products_details = call_endpoint("/products/get-by-tags", offline_token, hash, {'tagIds':comma_seperated_tag_ids, 'with':'tags'})
+	products_details = call_endpoint("/products/get-by-tags", offline_token, hash, {'tagIds':comma_seperated_tag_ids, 'with':'tags', 'fields':'id,imageUrl,tags'})
 	return products_details
 
 def remove_black_listed_tags(tag_ids):
-	tags_to_exclude = [414208,479499,479516,5601110,5031571,3923331,4125531,6374908,5066939,474896,1776576,1962220,5969363,5031419,4785512,1098204,1098227,1112005,1173137,1245774,1324787,1324813,1611877,760011,760034,760038,760024,760057,760012,760013,760059,760063,760021,760067,760054,760001,760074,760027,760007,760053,760055,760010,760051,760006,760071,760018,760015,760069,760019,760023,760066,760008,760016,760040,760005,760050,760056,760070,760052,760047,760002,760041,760035,760022,760028,760033,760060,760075,760044,760046,760032,760065,760061,760003,760064,760025,760072,760058,760062,760037,760030,760045,760029,760020,760026,760073,760043,760031,760009,760068,760036,760049,760039,760017,760048,760004,760042,224510,221554,479499]
+	tags_to_exclude = [760075,760074,760073,760072,760071,760070,760069,760068,760067,760066,760065,760064,760063,760062,760061,760060,760059,760058,760057,760056,760055,760054,760053,760052,760051,760050,760049,760048,760047,760046,760045,760044,760043,760042,760041,760040,760039,760038,760037,760036,760035,760034,760033,760032,760031,760030,760029,760028,760027,760026,760025,760024,760023,760022,760021,760020,760019,760018,760017,760016,760015,760013,760012,760011,760010,760009,760008,760007,760006,760005,760004,760003,760002,760001,6543420,6374908,5969363,5684883,5601110,5510554,5066939,5031571,5031419,479516,479516,479499,4785512,474896,414208,414208,4125531,3923331,2363881,224510,221554,1962220,1776576,1611877,1324813,1324787,1245774,1173137,1112005,1098227,1098204,479499]
 	new_tags_list = [x for x in tag_ids if x not in tags_to_exclude]
 	return new_tags_list
 
+
+
+
+
 ######  below you can find methods for internal usage ######
-
-
-
 #################################################################################
 # This method makes the call to the platform-api, 				  				#
 #################################################################################
