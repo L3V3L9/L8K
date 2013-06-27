@@ -35,6 +35,14 @@ db = {
 originals = [];
 init = false;
 prods = [];
+last_dir = -1;
+dirs = {
+   '0-1' : 1,
+   '01' : 2,
+   '10' : 3,
+   '-10' : 4
+};
+direction_changed = false;
 window.addEvent("domready", function(){
 
     var myRequest = new Request({ 
@@ -65,8 +73,14 @@ window.addEvent("domready", function(){
              var safety = 0;
              //console.log(db);
              iid = mywall.getIdFromCoordinates(cx,cy);
+
              var incx = productIndex[3],
-                 incy = productIndex[2];
+                 incy = productIndex[2],
+                 direction_index;
+             direction_index = dirs[''+incx+incy];
+             direction_changed = (direction_index!==last_dir);
+             last_dir = direction_index;
+
              while (db[iid]===undefined && safety < 5) {
                 //console.log(iid);
                 cx = cx + incx;
@@ -102,7 +116,8 @@ window.addEvent("domready", function(){
           }
           request = {
              products : prods,
-             items : items.length
+             items : items.length,
+             ignore_cache : direction_changed
           };
           var endpoint = '/discover';
           if (init) endpoint = '/find';

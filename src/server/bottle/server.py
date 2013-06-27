@@ -45,13 +45,13 @@ def getdiscover():
     data = predefined_items(l)
     return str(data)
 
-def cacheandserve(topmost_tags,l):
+def cacheandserve(topmost_tags,l,ignore_cache):
     global cache,last_time
     n = datetime.now()
     tdelta = n - last_time
     last_time = n
     #print "DELTA IS " +  str(tdelta.total_seconds()) + " AND L is " + str(l)
-    if tdelta.total_seconds()<2 and len(cache)>=l:
+    if tdelta.total_seconds()<2 and len(cache)>=l and ignore_cache==False:
         #print "GET FROM CACHE"
         #serve from cache
         res = cache[:l]
@@ -73,6 +73,7 @@ def getdiscover():
     post_body = json.load(request.body)
     l = post_body['items']
     products = post_body['products']
+    ignore_cache = post_body['ignore_cache']
     data = []
     if len(products):
         print "#### fetching pid #### =>" + str(products[0]['id'])
@@ -91,9 +92,13 @@ def getdiscover():
         print "#### fetch tags (next-call) #### =>" + str(next_tags)
 
         ### -- if you want to activate the algorithm, comment the next line!!!
-        next_tags = remove_black_listed_tags(products[0]['tags'])
+        naive_tags_list = products[0]['tags']
+        #for pindex in range(len(products)-1):
+        #    naive_tags_list.append(products[pindex+1]['tags'][0])
 
-        data = cacheandserve(next_tags,l)
+        next_tags = remove_black_listed_tags(naive_tags_list)
+
+        data = cacheandserve(next_tags,l,ignore_cache)
     return str(data)
 
 
