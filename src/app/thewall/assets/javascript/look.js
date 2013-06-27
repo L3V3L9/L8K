@@ -1,6 +1,4 @@
 $(function() {    
-    window.oncontextmenu = function() { return false; };
-
     $('#wall').mousedown(function(e){
         switch (event.which) {
           case 1:
@@ -10,7 +8,7 @@ $(function() {
             
             break;
 
-          case 3:
+          case 2:
             var elem = document.elementFromPoint(event.clientX, event.clientY);
             var tile = $(elem);
             if (!tile.hasClass('tile'))
